@@ -5,178 +5,190 @@
 //         console.log(enteredValue);
 //   }
 
-let currentButtonValue = 1;
-let numberOfButtons;
-const WINTEXT = "Excellent memory!";
-const WRONGORDER = "Wrong order!"
+// let currentButtonValue = 1;
+// // let numberOfButtons;
+// const WINTEXT = "Excellent memory!";
+// const WRONGORDER = "Wrong order!"
 
+// function startGame(){
+//     let game = new MyContainer();
+//     game.VerifyEntry();
+// }
 
-function VerifyEntry(){
-    let numberEntry = document.getElementById("numberEntry");
-    let enteredValue = numberEntry.value;
-    let allowedValue;
-    console.log(enteredValue);
-
-    if(enteredValue < 3 || enteredValue > 7){
-        alert("Entered value must be in range 3-7")
-        allowedValue = false;
-    }else{
-        allowedValue = true;
+class Game{
+    constructor(){
+        this.currentButtonValue = 1;
+        this.numberOfButtons = 0;
+        this.WINTEXT = "Excellent memory!";
+        this.WRONGORDER = "Wrong order!";
+        this.buttonManager = new ButtonManager(this);
     }
 
-    if(allowedValue){
-        numberOfButtons = enteredValue;
-        GenerateButtons();
-    }
-}
-
-
-function HideNumbers(){
-    for(let i = 1; i<= numberOfButtons; i++){
-        let currentButton = document.getElementById(`button${i}`);
-        // let css = `button${i}:hover{ background-color: #00ff00 }`;
-        // let style = document.createElement('style');
-
-        // if (style.styleSheet) {
-        //     style.styleSheet.cssText = css;
-        // } else {
-        //     style.appendChild(document.createTextNode(css));
-        // }
-        currentButton.textContent = "";
-        currentButton.onclick = Change;
-        
-        // document.getElementsByTagName('head')[0].appendChild(style);
-    }
-}
-function RevealNumbers(){
-    for(let i = 1; i<= numberOfButtons; i++){
-        let currentButton = document.getElementById(`button${i}`);
-        currentButton.textContent = `${currentButton.name}`;
-        currentButton.onclick = "";
-    }
-}
-
-class MyContainer{
-
-}
-class Location{
-
-}
-
-class MyButton{
-    id; 
-    name; 
-    textcontent; 
-    height; 
-    width; 
-    margin; 
-    backgroundColor;
-    aButton;
-
-    constructor(id, name, textcontent, height, width, margin, backgroundColor){
-        this.id = id;
-        this.name = name;
-        this.textcontent = textcontent;
-        this.height = height;
-        this.width = width;
-        this.margin = margin;
-        this.backgroundColor = backgroundColor;
-        aButton = document.createElement("button");
-        InitializeProperties();
-    }
+    verifyEntry(){
+        let numberEntry = document.getElementById("numberEntry");
+        let enteredValue = numberEntry.value;
+        let allowedValue;
     
-    InitializeProperties(){
-        aButton.id = `button${i}`;
-        aButton.name = `${i}`;
-        aButton.textContent = `${abutton.name}`;
-        aButton.style.height = "5em";
-        aButton.style.width = "10em";
-        aButton.style.margin = "5px";
-        aButton.style.backgroundColor = `rgba(${r},${g},${b},${a})`;
-    }
-
-    // SetProperties(textcontent, height, width, margin, backgroundColor){
-       
-    //     this.textcontent = textcontent;
-    //     this.height = height;
-    //     this.width = width;
-    //     this.margin = margin;
-    //     this.backgroundColor = backgroundColor;
-
-    //     aButton.id = `button${i}`;
-    //     aButton.name = `${i}`;
-    //     aButton.textContent = `${abutton.name}`;
-    //     aButton.style.height = "5em";
-    //     aButton.style.width = "10em";
-    //     aButton.style.margin = "5px";
-    //     aButton.style.backgroundColor = `rgba(${r},${g},${b},${a})`;
-    // }
-
-    Change(){
-        console.log("hi")
-        // this.style.backgroundColor = "green";
-        if(this.name == currentButtonValue){
-            currentButtonValue++;
-            this.textContent = `${this.name}`;
-            console.log("Button: "+ this.name + "\nNext Button: " + currentButtonValue);
-    
+        if(enteredValue < 3 || enteredValue > 7){
+            alert("Entered value must be in range 3-7")
+            allowedValue = false;
         }else{
-            RevealNumbers();
-            alert(WRONGORDER)
+            allowedValue = true;
+        }
+    
+        if(allowedValue){
+            this.numberOfButtons = enteredValue;
+            this.buttonManager.generateButtons(enteredValue);
         }
     }
 
+    resetGame() {
+        this.currentButtonValue = 1;
+    }
+
+    nextValue() {
+        this.currentButtonValue++;
+        if (this.currentButtonValue > this.numberOfButtons) {
+            alert(this.WINTEXT);
+        }
+    }
+
+    handleWrongOrder() {
+        this.buttonManager.revealNumbers();
+        alert(this.WRONGORDER);
+    }
+
+    // Change(){
+    //     console.log("hi")
+    //     // this.style.backgroundColor = "green";
+    //     if(this.name == currentButtonValue){
+    //         currentButtonValue++;
+    //         this.textContent = `${this.name}`;
+    //         console.log("Button: "+ this.name + "\nNext Button: " + currentButtonValue);
+    
+    //     }else{
+    //         RevealNumbers();
+    //         alert(WRONGORDER)
+    //     }
+    // }
+
+
+}
+class ButtonManager{
+    constructor(game){
+        this.game = game;
+        this.buttons = [];
+        this.goBtn = document.getElementById("goBtn");
+    }
+
+    generateButtons(numberOfButtons){
+        const buttonArea = document.getElementsByClassName("buttonArea")[0];
+        let time = 1000* this.game.numberOfButtons;
+        buttonArea.innerHTML = "";
+
+        for(let i = 1; i <= numberOfButtons; i++){
+            const newButton = new MyButton(i, this.game);
+            this.buttons.push(newButton);
+            let domBTN = newButton.getDOMbutton();
+            buttonArea.appendChild(domBTN);
+        }
+        this.lockGoButton();
+        setTimeout(() => this.scrambleButtons(), time);
+
+    }
+
+    async scrambleButtons(){
+        for(let i = 1; i <= this.game.numberOfButtons; i++){
+            for(let j = 1; j <= this.game.numberOfButtons; j++){
+                let top = Math.random()*window.innerHeight;
+                let left = Math.random()*window.innerWidth;
+                let currentButton = document.getElementById(`button${j}`)
+                currentButton.style.position = "absolute";
+                // currentButton.style.top = top + "px";
+                // currentButton.style.left = left + "px";
+                // console.log("top: " + top + "left: " + left);
+                currentButton.style.top = `${top}px`;
+                currentButton.style.left = `${left}px`;
+    
+            }
+            await sleep(2000);
+        }
+        this.hideNumbers();
+      }
+
+    hideNumbers() {
+        this.buttons.forEach(button => button.hideNumber());
+    }
+
+    revealNumbers() {
+        this.buttons.forEach(button => button.revealNumber());
+    }
+    lockGoButton(){
+        this.goBtn.onclick = "";
+    }
 }
 
+class MyButton{
 
-function GenerateButtons(){
-    let buttonArea = document.getElementsByClassName("buttonArea")[0];
-    let goBtn = document.getElementById("goBtn");
-    let time = 1000 * numberOfButtons;
-    for (let i = 1; i<= numberOfButtons; i++){
-        let currentButton = document.createElement("button");
+    constructor(value, game){
+        this.value = value;
+        this.game = game;
+        this.aButton = document.createElement("Button");
+        this.initProperties();
+    }
+    
+    initProperties(){
+        this.aButton.id = `button${this.value}`;
+        this.aButton.name = this.value;
+        this.aButton.textContent = this.value;
+        this.aButton.style.height = "5em";
+        this.aButton.style.width = "10em";
+        this.aButton.style.margin = "5px";
+        this.aButton.style.backgroundColor = this.randomColor();
+    }
+
+    getDOMbutton(){
+        return this.aButton;
+    }
+
+    handleClick(){
+        if (this.value === this.game.currentButtonValue) {
+            
+            // setTimeout(()=> {
+            //     this.revealNumber();
+            // },1000);
+            this.revealNumber();
+            this.game.nextValue();
+        } else {
+            this.game.handleWrongOrder();
+        }
+    }
+
+    hideNumber(){
+        this.aButton.textContent = "";
+        this.aButton.onclick = () => this.handleClick();
+    }
+    revealNumber(){
+        this.aButton.textContent = this.value;
+        this.aButton.onclick = "";
+    }
+
+    randomColor(){
         let r = Math.random()*255;
         let g = Math.random()*255;
         let b = Math.random()*255;
         let a = 100;
 
-        buttonArea.appendChild(currentButton);
-        currentButton.id = `button${i}`;
-        currentButton.name = `${i}`;
-        currentButton.textContent = `${currentButton.name}`;
-        currentButton.style.height = "5em";
-        currentButton.style.width = "10em";
-        currentButton.style.margin = "5px";
-        currentButton.style.backgroundColor = `rgba(${r},${g},${b},${a})`;
-        // currentButton.style.fontSize = "10pt";
-        
+        return `rgba(${r},${g},${b},${a})`;
     }
-    // Remove clickability
-    goBtn.onclick = "";
-    // setTimeout(randomizeLocations(numberOfButtons, time), time);
-    
-    setTimeout(() => scrambleButtons(), time);
 }
 
-  async function scrambleButtons(){
-    for(let i = 1; i <= numberOfButtons; i++){
-        for(let j = 1; j <= numberOfButtons; j++){
-            let top = Math.random()*window.innerHeight;
-            let left = Math.random()*window.innerWidth;
-            let currentButton = document.getElementById(`button${j}`)
-            currentButton.style.position = "absolute";
-            // currentButton.style.top = top + "px";
-            // currentButton.style.left = left + "px";
-            // console.log("top: " + top + "left: " + left);
-            currentButton.style.top = `${top}px`;
-            currentButton.style.left = `${left}px`;
-
-        }
-        await sleep(2000);
-    }
-    HideNumbers();
-  }
 //   Helper function to help with the two second pauses.
   function sleep(ms) {
     return new Promise(resolve => setTimeout(resolve, ms));
 }
+
+console.log("Script loaded!");
+
+const game = new Game();
+document.getElementById("goBtn").onclick =  () => game.verifyEntry();
