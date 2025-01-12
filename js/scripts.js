@@ -1,19 +1,5 @@
-// document.getElementById('goBtn').onclick =
-//   function (e) {
-//         let numberEntry = document.getElementById("numberEntry");
-//         let enteredValue = numberEntry.value;
-//         console.log(enteredValue);
-//   }
-
-// let currentButtonValue = 1;
-// // let numberOfButtons;
-// const WINTEXT = "Excellent memory!";
-// const WRONGORDER = "Wrong order!"
-
-// function startGame(){
-//     let game = new MyContainer();
-//     game.VerifyEntry();
-// }
+const fs = require('fs');
+const filePath = path.join(__dirname, "lang", "messages", "en", "user.js");
 
 class Game{
     constructor(){
@@ -50,30 +36,18 @@ class Game{
         this.currentButtonValue++;
         if (this.currentButtonValue > this.numberOfButtons) {
             alert(this.WINTEXT);
+            fs.appendFileSync(filePath, `\n${this.WINTEXT}\n`, 'utf8');
         }
     }
 
     handleWrongOrder() {
         this.buttonManager.revealNumbers();
         alert(this.WRONGORDER);
+        fs.appendFileSync(filePath, `\n${this.WRONGORDER}\n`, 'utf8');
     }
 
-    // Change(){
-    //     console.log("hi")
-    //     // this.style.backgroundColor = "green";
-    //     if(this.name == currentButtonValue){
-    //         currentButtonValue++;
-    //         this.textContent = `${this.name}`;
-    //         console.log("Button: "+ this.name + "\nNext Button: " + currentButtonValue);
-    
-    //     }else{
-    //         RevealNumbers();
-    //         alert(WRONGORDER)
-    //     }
-    // }
-
-
 }
+
 class ButtonManager{
     constructor(game){
         this.game = game;
@@ -90,6 +64,7 @@ class ButtonManager{
             const newButton = new MyButton(i, this.game);
             this.buttons.push(newButton);
             let domBTN = newButton.getDOMbutton();
+
             buttonArea.appendChild(domBTN);
         }
         this.lockGoButton();
@@ -103,10 +78,8 @@ class ButtonManager{
                 let top = Math.random()*window.innerHeight;
                 let left = Math.random()*window.innerWidth;
                 let currentButton = document.getElementById(`button${j}`)
+
                 currentButton.style.position = "absolute";
-                // currentButton.style.top = top + "px";
-                // currentButton.style.left = left + "px";
-                // console.log("top: " + top + "left: " + left);
                 currentButton.style.top = `${top}px`;
                 currentButton.style.left = `${left}px`;
     
@@ -153,7 +126,6 @@ class MyButton{
 
     handleClick(){
         if (this.value === this.game.currentButtonValue) {
-            
             this.revealNumber();
             setTimeout(()=> {
                 this.game.nextValue();
