@@ -154,11 +154,10 @@ class MyButton{
     handleClick(){
         if (this.value === this.game.currentButtonValue) {
             
-            // setTimeout(()=> {
-            //     this.revealNumber();
-            // },1000);
             this.revealNumber();
-            this.game.nextValue();
+            setTimeout(()=> {
+                this.game.nextValue();
+            },100);
         } else {
             this.game.handleWrongOrder();
         }
