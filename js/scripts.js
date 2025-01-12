@@ -5,6 +5,12 @@
 //         console.log(enteredValue);
 //   }
 
+let currentButtonValue = 1;
+let numberOfButtons;
+const WINTEXT = "Excellent memory!";
+const WRONGORDER = "Wrong order!"
+
+
 function VerifyEntry(){
     let numberEntry = document.getElementById("numberEntry");
     let enteredValue = numberEntry.value;
@@ -19,38 +25,111 @@ function VerifyEntry(){
     }
 
     if(allowedValue){
-        GenerateButtons(enteredValue);
+        numberOfButtons = enteredValue;
+        GenerateButtons();
     }
 }
 
 
-function HideNumbers(numberOfButtons){
-    console.log("hi")
+function HideNumbers(){
     for(let i = 1; i<= numberOfButtons; i++){
         let currentButton = document.getElementById(`button${i}`);
-        let css = `button${i}:hover{ background-color: #00ff00 }`;
-        let style = document.createElement('style');
+        // let css = `button${i}:hover{ background-color: #00ff00 }`;
+        // let style = document.createElement('style');
 
-        if (style.styleSheet) {
-            style.styleSheet.cssText = css;
-        } else {
-            style.appendChild(document.createTextNode(css));
-        }
+        // if (style.styleSheet) {
+        //     style.styleSheet.cssText = css;
+        // } else {
+        //     style.appendChild(document.createTextNode(css));
+        // }
         currentButton.textContent = "";
         currentButton.onclick = Change;
         
-        document.getElementsByTagName('head')[0].appendChild(style);
+        // document.getElementsByTagName('head')[0].appendChild(style);
+    }
+}
+function RevealNumbers(){
+    for(let i = 1; i<= numberOfButtons; i++){
+        let currentButton = document.getElementById(`button${i}`);
+        currentButton.textContent = `${currentButton.name}`;
+        currentButton.onclick = "";
     }
 }
 
-function Change(){
+class MyContainer{
+
+}
+class Location{
+
+}
+
+class MyButton{
+    id; 
+    name; 
+    textcontent; 
+    height; 
+    width; 
+    margin; 
+    backgroundColor;
+    aButton;
+
+    constructor(id, name, textcontent, height, width, margin, backgroundColor){
+        this.id = id;
+        this.name = name;
+        this.textcontent = textcontent;
+        this.height = height;
+        this.width = width;
+        this.margin = margin;
+        this.backgroundColor = backgroundColor;
+        aButton = document.createElement("button");
+        InitializeProperties();
+    }
     
-    console.log("hi")
-    this.backgroundColor = "green";
+    InitializeProperties(){
+        aButton.id = `button${i}`;
+        aButton.name = `${i}`;
+        aButton.textContent = `${abutton.name}`;
+        aButton.style.height = "5em";
+        aButton.style.width = "10em";
+        aButton.style.margin = "5px";
+        aButton.style.backgroundColor = `rgba(${r},${g},${b},${a})`;
+    }
+
+    // SetProperties(textcontent, height, width, margin, backgroundColor){
+       
+    //     this.textcontent = textcontent;
+    //     this.height = height;
+    //     this.width = width;
+    //     this.margin = margin;
+    //     this.backgroundColor = backgroundColor;
+
+    //     aButton.id = `button${i}`;
+    //     aButton.name = `${i}`;
+    //     aButton.textContent = `${abutton.name}`;
+    //     aButton.style.height = "5em";
+    //     aButton.style.width = "10em";
+    //     aButton.style.margin = "5px";
+    //     aButton.style.backgroundColor = `rgba(${r},${g},${b},${a})`;
+    // }
+
+    Change(){
+        console.log("hi")
+        // this.style.backgroundColor = "green";
+        if(this.name == currentButtonValue){
+            currentButtonValue++;
+            this.textContent = `${this.name}`;
+            console.log("Button: "+ this.name + "\nNext Button: " + currentButtonValue);
+    
+        }else{
+            RevealNumbers();
+            alert(WRONGORDER)
+        }
+    }
+
 }
 
 
-function GenerateButtons(numberOfButtons){
+function GenerateButtons(){
     let buttonArea = document.getElementsByClassName("buttonArea")[0];
     let goBtn = document.getElementById("goBtn");
     let time = 1000 * numberOfButtons;
@@ -63,8 +142,8 @@ function GenerateButtons(numberOfButtons){
 
         buttonArea.appendChild(currentButton);
         currentButton.id = `button${i}`;
-        currentButton.name = `button${i}`;
-        currentButton.textContent = `${i}`;
+        currentButton.name = `${i}`;
+        currentButton.textContent = `${currentButton.name}`;
         currentButton.style.height = "5em";
         currentButton.style.width = "10em";
         currentButton.style.margin = "5px";
@@ -76,11 +155,10 @@ function GenerateButtons(numberOfButtons){
     goBtn.onclick = "";
     // setTimeout(randomizeLocations(numberOfButtons, time), time);
     
-    setTimeout(() => scrambleButtons(numberOfButtons, time), time);
+    setTimeout(() => scrambleButtons(), time);
 }
 
-  async function scrambleButtons(numberOfButtons, time){
-    // console.log("Entered");
+  async function scrambleButtons(){
     for(let i = 1; i <= numberOfButtons; i++){
         for(let j = 1; j <= numberOfButtons; j++){
             let top = Math.random()*window.innerHeight;
@@ -89,17 +167,16 @@ function GenerateButtons(numberOfButtons){
             currentButton.style.position = "absolute";
             // currentButton.style.top = top + "px";
             // currentButton.style.left = left + "px";
-            console.log("top: " + top + "left: " + left);
+            // console.log("top: " + top + "left: " + left);
             currentButton.style.top = `${top}px`;
             currentButton.style.left = `${left}px`;
 
         }
         await sleep(2000);
     }
-    HideNumbers(numberOfButtons);
+    HideNumbers();
   }
 //   Helper function to help with the two second pauses.
   function sleep(ms) {
-    console.log("Entered");
     return new Promise(resolve => setTimeout(resolve, ms));
 }
